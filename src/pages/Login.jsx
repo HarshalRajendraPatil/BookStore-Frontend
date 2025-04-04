@@ -11,10 +11,10 @@ const Login = () => {
     try {
       const response = await api.post("/auth/login", { email, password });
       localStorage.setItem("token", response.data.token);
-      console.log("Login Successful", response.data);
-      window.location.href = "/dashboard"; // Redirect on successful login
+      window.location.href = "/dashboard";
     } catch (err) {
-      setError("Invalid email or password");
+      console.log(err);
+      setError(err?.response?.data?.message || "Registration failed.");
     }
   };
 
@@ -35,20 +35,20 @@ const Login = () => {
             <input
               type="email"
               placeholder="Enter your email"
-              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-          <div className="mb-4">
+          <div className="mb-6">
             <label className="block text-gray-700 text-sm font-medium mb-1">
               Password
             </label>
             <input
               type="password"
               placeholder="Enter your password"
-              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -62,7 +62,7 @@ const Login = () => {
           </button>
         </form>
         <p className="text-center text-sm text-gray-600 mt-4">
-          Don't have an account?{" "}
+          Don’t have an account?{" "}
           <a href="/register" className="text-blue-600 font-medium">
             Sign up
           </a>

@@ -16,10 +16,9 @@ const Register = () => {
         password,
       });
       localStorage.setItem("token", response.data.token);
-      console.log("Registration successful", response.data);
       window.location.href = "/dashboard";
     } catch (err) {
-      setError("Registration failed. Please check your input.");
+      setError(err?.response?.data?.message || "Registration failed.");
     }
   };
 
@@ -40,7 +39,7 @@ const Register = () => {
             <input
               type="text"
               placeholder="Enter your username"
-              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full p-3 text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -53,20 +52,20 @@ const Register = () => {
             <input
               type="email"
               placeholder="Enter your email"
-              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full p-3 text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-          <div className="mb-4">
+          <div className="mb-6">
             <label className="block text-gray-700 text-sm font-medium mb-1">
               Password
             </label>
             <input
               type="password"
               placeholder="Create a password"
-              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full p-3 text-gray-900 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
