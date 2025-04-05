@@ -1,4 +1,38 @@
+import { useState, useEffect } from "react";
+import api from "../api";
+
 const Home = () => {
+  const [userRole, setUserRole] = useState(null); // State to hold the user role
+  const isLoggedIn = !!localStorage.getItem("token"); // Check if user is logged in
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      const token = localStorage.getItem("token"); // Get the token from local storage
+      if (token) {
+        try {
+          const response = await api.post("/get-role", { token }); // Make the API call
+          setUserRole(response.data.role); // Set the user role from the response
+        } catch (error) {
+          console.error("Error fetching user role:", error);
+          setUserRole(null); // Reset user role on error
+        }
+      }
+    };
+
+    fetchUserRole(); // Call the function to fetch user role
+  }, [isLoggedIn]); // Dependency array to run effect when isLoggedIn changes
+
+  if (!isLoggedIn) {
+    return (window.location.href = "/login");
+  }
+
+  if (userRole == "Vendor") {
+    return (window.location.href = "/seller-dashboard");
+  }
+  if (userRole == "Admin") {
+    return (window.location.href = "/admin-dashboard");
+  }
+
   return (
     <div className="min-h-screen w-screen bg-gray-50 flex flex-col items-center justify-center">
       <div className="text-center p-8">

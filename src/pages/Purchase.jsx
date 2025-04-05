@@ -40,7 +40,7 @@ const Purchase = () => {
     };
 
     fetchUser();
-  }, []);
+  }, [navigate]);
 
   const handleConfirmOrder = async () => {
     try {
@@ -50,7 +50,7 @@ const Purchase = () => {
 
       await api.post("/order", { bookId });
       alert("🎉 Order placed successfully!");
-      navigate("/orders");
+      navigate("/my-orders");
     } catch (err) {
       alert("❌ Failed to place order.");
     } finally {

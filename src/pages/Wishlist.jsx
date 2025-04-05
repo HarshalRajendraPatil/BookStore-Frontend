@@ -5,19 +5,38 @@ import { Link } from "react-router-dom";
 const Wishlist = () => {
   const [wishlist, setWishlist] = useState([]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchWishlist();
   }, []);
 
   const fetchWishlist = async () => {
+    setLoading(true);
     try {
       const response = await api.get("/user/wishlist");
       setWishlist(response.data.wishlist);
     } catch (err) {
       setError(err.response?.data?.error || "Failed to fetch wishlist");
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-10 px-4">
+        <h1 className="text-4xl font-bold text-center text-purple-700 mb-8">
+          Your Wishlist
+        </h1>
+        <div className="text-center mt-20">
+          <p className="text-lg text-gray-600 mb-4">
+            Hold on while we load your wishlish.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">

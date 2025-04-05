@@ -11,16 +11,20 @@ const BookDetails = () => {
   const [error, setError] = useState("");
   const [loadingWishlist, setLoadingWishlist] = useState(false);
   const [isInWishlist, setIsInWishlist] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Fetch book details
   useEffect(() => {
     const fetchBook = async () => {
+      setLoading(true);
       try {
         const response = await api.get(`/books/${bookId}`);
         setBook(response.data.book);
         setError("");
       } catch (err) {
         setError("Failed to fetch book details");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -108,6 +112,18 @@ const BookDetails = () => {
 
   if (error) {
     return <p className="text-center text-red-600 mt-10">{error}</p>;
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-10 px-4">
+        <div className="text-center mt-20">
+          <p className="text-lg text-gray-600 mb-4">
+            Hold on while we load the data for the book.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (

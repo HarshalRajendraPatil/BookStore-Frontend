@@ -11,7 +11,11 @@ const Login = () => {
     try {
       const response = await api.post("/auth/login", { email, password });
       localStorage.setItem("token", response.data.token);
-      window.location.href = "/";
+      if (response.data.user.userRole == "Vendor")
+        window.location.href = "/seller-dashboard";
+      else if (response.data.user.userRole == "Admin")
+        window.location.href = "admin-dashboard";
+      else window.location.href = "/";
     } catch (err) {
       console.log(err);
       setError(err?.response?.data?.message || "Registration failed.");

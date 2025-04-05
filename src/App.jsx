@@ -9,6 +9,12 @@ import BookDetails from "./pages/BookDetails";
 import Wishlist from "./pages/Wishlist";
 import Purchase from "./pages/Purchase";
 import Orders from "./pages/Order";
+import MyProducts from "./pages/MyProduct";
+import SellerOrders from "./pages/SellerOrders";
+import SellerHome from "./pages/SellerDashboard";
+import AdminUsers from "./pages/AdminUser";
+import AdminSeller from "./pages/AdminSeller";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   return (
@@ -24,6 +30,12 @@ function App() {
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/purchase/:bookId" element={<Purchase />} />
           <Route path="/my-orders" element={<Orders />} />
+          <Route path="/my-products" element={<MyProducts />} />
+          <Route path="/orders" element={<SellerOrders />} />
+          <Route path="/seller-dashboard" element={<SellerHome />} />
+          <Route path="/users" element={<AdminUsers />} />
+          <Route path="/sellers" element={<AdminSeller />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
         </Route>
       </Routes>
     </Router>

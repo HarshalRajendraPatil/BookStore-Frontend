@@ -52,7 +52,7 @@ const Navbar = () => {
       case "Vendor":
         return (
           <>
-            <Link to="/">Home</Link>
+            <Link to="/seller-dashboard">Home</Link>
             <Link to="/my-products">My Products</Link>
             <Link to="/add-books">Add Books</Link>
             <Link to="/orders">Orders</Link>
@@ -62,7 +62,7 @@ const Navbar = () => {
       case "Admin":
         return (
           <>
-            <Link to="/">Home</Link>
+            <Link to="/admin-dashboard">Home</Link>
             <Link to="/users">Users</Link>
             <Link to="/sellers">Sellers</Link>
             <button onClick={handleLogout}>Logout</button>
