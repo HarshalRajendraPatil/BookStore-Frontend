@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import api from "../api.js";
 
 const Register = () => {
@@ -16,7 +16,7 @@ const Register = () => {
         password,
       });
       localStorage.setItem("token", response.data.token);
-      window.location.href = "/dashboard";
+      window.location.href = "/";
     } catch (err) {
       setError(err?.response?.data?.message || "Registration failed.");
     }

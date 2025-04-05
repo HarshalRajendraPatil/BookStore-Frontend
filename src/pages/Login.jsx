@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import api from "../api.js";
 
 const Login = () => {
@@ -11,7 +11,7 @@ const Login = () => {
     try {
       const response = await api.post("/auth/login", { email, password });
       localStorage.setItem("token", response.data.token);
-      window.location.href = "/dashboard";
+      window.location.href = "/";
     } catch (err) {
       console.log(err);
       setError(err?.response?.data?.message || "Registration failed.");
