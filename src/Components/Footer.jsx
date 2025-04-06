@@ -5,7 +5,7 @@ const Footer = () => {
         <p>
           &copy; {new Date().getFullYear()} Book Store. All rights reserved.
         </p>
-        <div className="space-x-4">
+        <div className="flex flex-wrap justify-center items-center gap-10">
           <p href="/privacy-policy" className="text-gray-300 hover:text-white">
             Privacy Policy
           </p>
