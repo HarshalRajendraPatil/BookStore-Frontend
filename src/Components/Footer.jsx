@@ -6,18 +6,18 @@ const Footer = () => {
           &copy; {new Date().getFullYear()} Book Store. All rights reserved.
         </p>
         <div className="space-x-4">
-          <a href="/privacy-policy" className="text-gray-300 hover:text-white">
+          <p href="/privacy-policy" className="text-gray-300 hover:text-white">
             Privacy Policy
-          </a>
-          <a
+          </p>
+          <p
             href="/terms-of-service"
             className="text-gray-300 hover:text-white"
           >
             Terms of Service
-          </a>
-          <a href="/contact" className="text-gray-300 hover:text-white">
+          </p>
+          <p href="/contact" className="text-gray-300 hover:text-white">
             Contact Us
-          </a>
+          </p>
         </div>
       </div>
     </footer>

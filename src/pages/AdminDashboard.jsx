@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+import { toast } from "react-toastify";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -25,9 +26,9 @@ const AdminDashboard = () => {
   const fetchDashboardStats = async () => {
     try {
       const response = await api.get("/admin/stats");
-      // Expected: { users: 100, vendors: 20, orders: 50, books: 200 }
       setStats(response.data.stats);
     } catch (error) {
+      toast.error(error.response?.data?.error || "Failed to fetch the data.");
       console.error("Error fetching dashboard stats", error);
     }
   };

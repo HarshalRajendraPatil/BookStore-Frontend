@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../api.js";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -11,13 +12,14 @@ const Login = () => {
     try {
       const response = await api.post("/auth/login", { email, password });
       localStorage.setItem("token", response.data.token);
+      toast.success("Successfully Logged in.");
       if (response.data.user.userRole == "Vendor")
         window.location.href = "/seller-dashboard";
       else if (response.data.user.userRole == "Admin")
         window.location.href = "admin-dashboard";
       else window.location.href = "/";
     } catch (err) {
-      console.log(err);
+      toast.error(err.response?.data?.error || "Login failed.");
       setError(err?.response?.data?.message || "Registration failed.");
     }
   };

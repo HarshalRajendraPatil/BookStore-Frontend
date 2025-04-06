@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Books = () => {
   const [books, setBooks] = useState([]);
@@ -19,6 +20,7 @@ const Books = () => {
       setBooks(response.data.books);
       setError("");
     } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to fetch books.");
       setError(err.response?.data?.error || "Failed to fetch books");
     }
   };

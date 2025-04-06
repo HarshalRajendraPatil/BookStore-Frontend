@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api";
+import { toast } from "react-toastify";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -26,6 +27,7 @@ const AdminUsers = () => {
       const response = await api.get("/user?user=true");
       setUsers(response.data.users);
     } catch (error) {
+      toast.error(error.response?.data?.error || "Something went wrong.");
       console.error("Error fetching users", error);
     }
   };
@@ -34,7 +36,9 @@ const AdminUsers = () => {
     try {
       await api.delete(`/user/${id}`);
       setUsers(users.filter((user) => user._id !== id));
+      toast.success("User deleted successfully.");
     } catch (error) {
+      toast.error(error.response?.data?.error || "Something went wrong.");
       console.error("Error deleting user", error);
     }
   };
@@ -47,8 +51,10 @@ const AdminUsers = () => {
           user._id === id ? { ...user, role: newRole } : user
         )
       );
+      toast.success("Role updated successfully.");
     } catch (error) {
       console.error("Error updating role", error);
+      toast.error(error.response?.data?.error || "Something went wrong.");
     }
   };
 

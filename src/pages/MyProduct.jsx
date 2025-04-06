@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../api";
+import { toast } from "react-toastify";
 
 const MyProducts = () => {
   const [books, setBooks] = useState([]);
@@ -26,6 +27,7 @@ const MyProducts = () => {
       const response = await api.get(`/books/my-products`);
       setBooks(response.data.books);
     } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to fetch your books.");
       setError("Failed to fetch your books.");
     }
   };
@@ -39,8 +41,10 @@ const MyProducts = () => {
     try {
       setLoading(true);
       await api.delete(`/books/${bookId}`);
+      toast.success("Book deleted successfully.");
       setBooks((prev) => prev.filter((book) => book._id !== bookId));
     } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to delete books.");
       setError("Failed to delete book.");
     } finally {
       setLoading(false);
@@ -76,7 +80,9 @@ const MyProducts = () => {
       // Refresh book list after update
       fetchVendorBooks();
       setIsModalOpen(false);
+      toast.success("Book details updated successfully.");
     } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to update books.");
       setError("Failed to update book.");
     }
   };

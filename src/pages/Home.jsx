@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../api";
+import { toast } from "react-toastify";
 
 const Home = () => {
   const [userRole, setUserRole] = useState(null); // State to hold the user role
@@ -13,6 +14,9 @@ const Home = () => {
           const response = await api.post("/get-role", { token }); // Make the API call
           setUserRole(response.data.role); // Set the user role from the response
         } catch (error) {
+          toast.error(
+            error.response?.data?.error || "Error fetching user role."
+          );
           console.error("Error fetching user role:", error);
           setUserRole(null); // Reset user role on error
         }

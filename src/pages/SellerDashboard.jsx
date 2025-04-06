@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import api from "../api";
+import { toast } from "react-toastify";
 
 const SellerHome = () => {
   const [stats, setStats] = useState({ bookCount: 0, orderCount: 0 });
@@ -24,6 +25,7 @@ const SellerHome = () => {
       const response = await api.get("/seller/stats");
       setStats(response.data.stats);
     } catch (error) {
+      toast.error(error.response?.data?.error || "Failed to fetch stats.");
       console.error("Failed to fetch stats:", error);
     } finally {
       setLoading(false);

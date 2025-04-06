@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../api";
+import { toast } from "react-toastify";
 
 const SellerOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -16,13 +17,12 @@ const SellerOrders = () => {
       const response = await api.get("/order/seller");
       setOrders(response.data.orders);
     } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to load your orders.");
       setError("Failed to load your orders.");
     } finally {
       setLoading(false);
     }
   };
-
-  console.log(orders);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-100 py-10 px-4">

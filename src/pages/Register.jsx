@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../api.js";
+import { toast } from "react-toastify";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -16,8 +17,10 @@ const Register = () => {
         password,
       });
       localStorage.setItem("token", response.data.token);
+      toast.success("Registered successfully.");
       window.location.href = "/";
     } catch (err) {
+      toast.error(err.response?.data?.error || "Registration failed.");
       setError(err?.response?.data?.message || "Registration failed.");
     }
   };

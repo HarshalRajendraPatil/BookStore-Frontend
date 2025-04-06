@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api.js";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const AddBook = () => {
   const [userRole, setUserRole] = useState("");
@@ -23,6 +24,7 @@ const AddBook = () => {
           setUserRole(response.data.role);
         } catch (error) {
           console.error("Error fetching user role:", error);
+          toast.error("Something went wrong!");
           setUserRole(null);
         }
       }
@@ -51,9 +53,12 @@ const AddBook = () => {
         description,
         imageUrl,
       });
+      const id = response.data.book._id;
 
       console.log("Book added successfully:", response.data);
-      navigate("/");
+      toast.success("Your book was added successfully");
+
+      navigate(`/books/${id}`);
     } catch (err) {
       setError(err.response?.data?.error || "Failed to add book");
     }

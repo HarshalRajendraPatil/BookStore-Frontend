@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -15,6 +16,7 @@ const Orders = () => {
       const response = await api.get("/order/user");
       setOrders(response.data.orders);
     } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to fetch orders.");
       setError(err.response?.data?.error || "Failed to fetch orders");
     }
   };

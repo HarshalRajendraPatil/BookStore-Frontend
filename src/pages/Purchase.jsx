@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api";
+import { toast } from "react-toastify";
 
 const Purchase = () => {
   const { bookId } = useParams();
@@ -16,6 +17,9 @@ const Purchase = () => {
         const response = await api.get(`/books/${bookId}`);
         setBook(response.data.book);
       } catch (err) {
+        toast.error(
+          err.response?.data?.error || "Failed to fetch book details."
+        );
         setError("Failed to fetch book details");
       }
     };
@@ -35,6 +39,9 @@ const Purchase = () => {
 
         setUser(response.data.user);
       } catch (err) {
+        toast.error(
+          err.response?.data?.error || "Failed to fetch user details."
+        );
         setError("Failed to fetch user details");
       }
     };
@@ -49,10 +56,10 @@ const Purchase = () => {
       if (!token) return navigate("/login");
 
       await api.post("/order", { bookId });
-      alert("🎉 Order placed successfully!");
+      toast.success("Order placed successfully.");
       navigate("/my-orders");
     } catch (err) {
-      alert("❌ Failed to place order.");
+      toast.error(err.response?.data?.error || "Failed to place the order.");
     } finally {
       setLoading(false);
     }

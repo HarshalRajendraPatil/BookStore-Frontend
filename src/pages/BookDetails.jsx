@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import api from "../api";
 import Slider from "react-slick";
+import { toast } from "react-toastify";
 
 const BookDetails = () => {
   const { bookId } = useParams();
@@ -22,6 +23,9 @@ const BookDetails = () => {
         setBook(response.data.book);
         setError("");
       } catch (err) {
+        toast.error(
+          err.response?.data?.error || "Failed to fetch book details"
+        );
         setError("Failed to fetch book details");
       } finally {
         setLoading(false);
@@ -43,6 +47,9 @@ const BookDetails = () => {
           setSimilarBooks(filtered);
         }
       } catch (err) {
+        toast.error(
+          err.response?.data?.error || "Failed to fetch similar books."
+        );
         console.error("Failed to fetch similar books", err);
       }
     };
@@ -63,6 +70,7 @@ const BookDetails = () => {
         const wishlistBooks = response.data.wishlist || [];
         setIsInWishlist(wishlistBooks.some((b) => b._id === bookId));
       } catch (err) {
+        toast.error(err.response?.data?.error || "Failed to fetch wishlist.");
         console.error("Failed to fetch wishlist", err);
       }
     };
@@ -78,11 +86,10 @@ const BookDetails = () => {
       setLoadingWishlist(true);
       await api.post("/user/wishlist/add-remove", { bookId });
       setIsInWishlist(!isInWishlist);
-      alert(
-        isInWishlist ? "❌ Removed from wishlist!" : "✅ Added to wishlist!"
-      );
+      if (isInWishlist) toast.success("Removed from wishlist.");
+      else toast.success("Added to wishlist.");
     } catch (err) {
-      alert("❌ Failed to update wishlist.");
+      toast.error(err.response?.data?.error || "Failed to update wishlist.");
     } finally {
       setLoadingWishlist(false);
     }

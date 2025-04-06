@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
   const [userRole, setUserRole] = useState(null); // State to hold the user role
@@ -14,7 +15,9 @@ const Navbar = () => {
           const response = await api.post("/get-role", { token }); // Make the API call
           setUserRole(response.data.role); // Set the user role from the response
         } catch (error) {
-          console.error("Error fetching user role:", error);
+          toast.error(
+            error.response?.data?.error || "Failed to fetch the role."
+          );
           setUserRole(null); // Reset user role on error
         }
       }
@@ -25,6 +28,7 @@ const Navbar = () => {
 
   const handleLogout = function () {
     localStorage.removeItem("token");
+    toast.success("Logout successful");
     window.location.href = "/login";
   };
 

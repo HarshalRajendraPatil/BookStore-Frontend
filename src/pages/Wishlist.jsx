@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Wishlist = () => {
   const [wishlist, setWishlist] = useState([]);
@@ -17,6 +18,7 @@ const Wishlist = () => {
       const response = await api.get("/user/wishlist");
       setWishlist(response.data.wishlist);
     } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to fetch wishlist.");
       setError(err.response?.data?.error || "Failed to fetch wishlist");
     } finally {
       setLoading(false);
