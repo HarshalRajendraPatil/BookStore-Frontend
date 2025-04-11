@@ -29,7 +29,7 @@ const Navbar = () => {
   const handleLogout = function () {
     localStorage.removeItem("token");
     toast.success("Logout successful");
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   const renderLinks = () => {
