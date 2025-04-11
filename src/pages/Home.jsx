@@ -26,10 +26,6 @@ const Home = () => {
     fetchUserRole(); // Call the function to fetch user role
   }, [isLoggedIn]); // Dependency array to run effect when isLoggedIn changes
 
-  if (!isLoggedIn) {
-    return (window.location.href = "/login");
-  }
-
   if (userRole == "Vendor") {
     return (window.location.href = "/seller-dashboard");
   }
