@@ -11,6 +11,68 @@ const Purchase = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const openRazorpayCheckout = (orderId, amount, currency) => {
+    const options = {
+      key: "rzp_test_QpwyFlfTVC5zuJ", // or you can directly use the test key from the dashboard
+      amount: amount, // in paise
+      currency: currency,
+      name: "Your Website Name",
+      description: "Book Purchase Payment",
+      order_id: orderId, // This is the order_id created in the backend.
+
+      // Handler once payment is successful
+      handler: async function (response) {
+        /*
+          response.razorpay_payment_id
+          response.razorpay_order_id
+          response.razorpay_signature
+        */
+        try {
+          // Step 1: Send these details to your server to verify the signature
+          const verifyUrl = "/verify-razorpay-signature";
+          const { data } = await api.post(
+            verifyUrl,
+            {
+              orderId: response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
+
+          // Step 2: If verification is successful, do whatever you need:
+          if (data.success) {
+            toast.success("Payment successful!");
+            navigate("/my-orders");
+          } else {
+            toast.error("Payment verification failed!");
+          }
+        } catch (error) {
+          console.error("Error is ", error);
+          toast.error("Payment verification failed!");
+        }
+      },
+
+      // Optional: handle payment failure
+      modal: {
+        ondismiss: function () {
+          toast.info("Payment popup closed. Order was not completed.");
+        },
+      },
+
+      theme: {
+        color: "#686CFD",
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  };
+
   useEffect(() => {
     const fetchBook = async () => {
       try {
@@ -49,17 +111,59 @@ const Purchase = () => {
     fetchUser();
   }, [navigate]);
 
+  // const handleConfirmOrder = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const token = localStorage.getItem("token");
+  //     if (!token) return navigate("/login");
+
+  //     await api.post("/order", { bookId });
+  //     toast.success("Order placed successfully.");
+  //     navigate("/my-orders");
+  //   } catch (err) {
+  //     toast.error(err.response?.data?.error || "Failed to place the order.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleConfirmOrder = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
-      if (!token) return navigate("/login");
 
-      await api.post("/order", { bookId });
-      toast.success("Order placed successfully.");
-      navigate("/my-orders");
+      // Step 1: Check for user token or redirect if no token
+      const token = localStorage.getItem("token");
+      if (!token) {
+        return navigate("/login");
+      }
+
+      const ord = await api.post("/order", { bookId });
+      console.log(ord.data);
+
+      // Step 2: Call the Razorpay order creation endpoint (the new route)
+      // Assume your backend route is `/create-razorpay-order`
+      // You’d pass the total price from the `book.price` in the state
+      const razorpayOrderResponse = await api.post(
+        "/create-razorpay-order",
+        {
+          amount: book.price,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      // Step 3: Extract the orderId from the response
+      const { order_id, amount, currency } = razorpayOrderResponse.data;
+
+      // Step 4: Initialize the Razorpay payment
+      openRazorpayCheckout(order_id, amount, currency);
+
+      // Step 5: Create an order in your server DB (like your original code)
+      // This is optional, depending on your app’s structure
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to place the order.");
+      console.error(err);
     } finally {
       setLoading(false);
     }

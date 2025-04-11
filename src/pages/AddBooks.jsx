@@ -54,8 +54,6 @@ const AddBook = () => {
         imageUrl,
       });
       const id = response.data.book._id;
-
-      console.log("Book added successfully:", response.data);
       toast.success("Your book was added successfully");
 
       navigate(`/books/${id}`);

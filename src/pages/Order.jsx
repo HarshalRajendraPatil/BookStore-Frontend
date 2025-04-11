@@ -7,19 +7,69 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
+  // For pagination + infinite scroll
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  const fetchOrders = async () => {
+  // Fetch orders whenever page changes
+  useEffect(() => {
+    fetchOrders(page);
+    // eslint-disable-next-line
+  }, [page]);
+
+  const fetchOrders = async (pageNumber) => {
     try {
-      const response = await api.get("/order/user");
-      setOrders(response.data.orders);
+      setLoading(true);
+      // Example: pass `page` to the server to get paginated results
+      const response = await api.get("/order/user", {
+        params: { page: pageNumber },
+      });
+
+      const fetchedOrders = response.data.orders; // or however your API returns it
+
+      // Use the functional form of setOrders to safely access the "previous" orders
+      setOrders((prevOrders) => {
+        // Filter out any orders that are already in prevOrders
+        const newOrders = fetchedOrders.filter(
+          (newOrder) => !prevOrders.some((order) => order._id === newOrder._id)
+        );
+
+        // If no new orders were returned, we've reached the end
+        setHasMore(newOrders.length > 0);
+
+        return [...prevOrders, ...newOrders];
+      });
+
+      setError("");
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to fetch orders.");
       setError(err.response?.data?.error || "Failed to fetch orders");
+    } finally {
+      setLoading(false);
     }
   };
+
+  // Infinite scroll handler
+  const handleScroll = () => {
+    // Check if the user reached the bottom, we're not already loading, and there's more data
+    if (
+      window.innerHeight + document.documentElement.scrollTop !==
+        document.documentElement.offsetHeight ||
+      loading ||
+      !hasMore
+    ) {
+      return;
+    }
+    // Go to the next page
+    setPage((prevPage) => prevPage + 1);
+  };
+
+  // Attach/Detach scroll listener
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [loading, hasMore]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-100 py-8 px-4">
@@ -38,17 +88,16 @@ const Orders = () => {
               key={order._id}
               className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-xl transition duration-300 flex flex-col"
             >
-              {order.bookId.imageUrl && (
+              {order.bookId?.imageUrl && (
                 <img
                   src={order.bookId.imageUrl}
                   alt={order.bookId.title}
                   className="w-full max-h-64 object-contain bg-white"
                 />
               )}
-
               <div className="p-4 flex flex-col flex-grow">
                 <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                  {order.bookId.title}
+                  {order.bookId?.title}
                 </h2>
                 <p className="text-gray-700 mb-1">
                   <strong>Order ID:</strong> {order._id}
@@ -67,7 +116,7 @@ const Orders = () => {
             </div>
           ))}
         </div>
-      ) : (
+      ) : !loading ? (
         <div className="text-center mt-10">
           <p className="text-lg text-gray-600 mb-4">You have no orders.</p>
           <Link
@@ -77,6 +126,11 @@ const Orders = () => {
             <p className="text-white">Shop Now</p>
           </Link>
         </div>
+      ) : null}
+
+      {/* Show a loading text or spinner while fetching more */}
+      {loading && (
+        <p className="text-center text-gray-600 mt-4">Loading more orders...</p>
       )}
     </div>
   );

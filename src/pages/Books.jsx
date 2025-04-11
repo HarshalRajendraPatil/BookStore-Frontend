@@ -8,31 +8,117 @@ const Books = () => {
   const [searchName, setSearchName] = useState("");
   const [searchGenre, setSearchGenre] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const fetchBooks = async () => {
+  // For infinite scroll
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
+  // Main fetch function
+  const fetchBooks = async (pageNumber, isNewSearch = false) => {
+    if (loading) return;
+
     try {
+      setLoading(true);
       const response = await api.get("/books", {
         params: {
           name: searchName,
           genre: searchGenre,
+          page: pageNumber,
         },
       });
-      setBooks(response.data.books);
+
+      const fetchedBooks = response.data.books;
+
+      // If this is a new search, replace all books
+      // Otherwise, append to existing books
+      setBooks((prevBooks) => {
+        if (isNewSearch) {
+          return fetchedBooks;
+        } else {
+          // Filter out duplicates
+          const newBooks = fetchedBooks.filter(
+            (newBook) => !prevBooks.some((b) => b._id === newBook._id)
+          );
+
+          // If no new books came in, there's nothing more to load
+          if (newBooks.length === 0) {
+            setHasMore(false);
+          }
+
+          return [...prevBooks, ...newBooks];
+        }
+      });
+
+      // Update hasMore based on whether we got fewer books than expected
+      // Assumes backend returns a maximum of 10 books per page (adjust as needed)
+      if (fetchedBooks.length < 10) {
+        setHasMore(false);
+      }
+
       setError("");
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to fetch books.");
       setError(err.response?.data?.error || "Failed to fetch books");
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Initial load and search changes
   useEffect(() => {
-    fetchBooks();
-  }, [searchName, searchGenre]);
+    // Don't trigger on the initial render
+    const isInitialRender = page === 1 && books.length === 0;
 
+    if (isInitialRender) {
+      fetchBooks(1, true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Effect for page changes
+  useEffect(() => {
+    // Skip the first page - that's handled by the initial load
+    if (page > 1) {
+      fetchBooks(page, false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
+
+  // Handle the search form
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchBooks();
+    // Reset book list and page
+    setBooks([]);
+    setPage(1);
+    setHasMore(true);
+    // Fetch with the new search parameters
+    fetchBooks(1, true);
   };
+
+  // Infinite scroll handler: check if user is near bottom
+  const handleScroll = () => {
+    if (loading || !hasMore) return;
+
+    // Scroll position
+    const scrollTop = document.documentElement.scrollTop;
+    const windowHeight = window.innerHeight;
+    const fullHeight = document.documentElement.offsetHeight;
+
+    console.log(scrollTop, windowHeight, fullHeight);
+
+    // If the user is within 100px of the bottom, load next page
+    if (windowHeight + scrollTop >= fullHeight / 2) {
+      console.log(page);
+      setPage((prevPage) => prevPage + 1);
+    }
+  };
+
+  // Attach and detach the scroll listener
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [loading, hasMore]); // If loading or hasMore changes, re-bind
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-indigo-200 py-10 px-4">
@@ -72,7 +158,7 @@ const Books = () => {
       </form>
 
       {/* Book List */}
-      {books.length === 0 ? (
+      {books.length === 0 && !loading ? (
         <p className="text-center text-gray-600 text-lg">No books found.</p>
       ) : (
         <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
@@ -100,6 +186,10 @@ const Books = () => {
             </Link>
           ))}
         </div>
+      )}
+
+      {loading && (
+        <p className="text-center text-gray-600 mt-4">Loading more books...</p>
       )}
     </div>
   );
