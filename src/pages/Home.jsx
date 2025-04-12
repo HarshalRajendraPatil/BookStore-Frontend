@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api";
 import { toast } from "react-toastify";
-import VendorDashboard from "./VendorDashboard";
+import SellerHome from "./SellerDashboard"
 import AdminDashboard from "./AdminDashboard";  
 
 const Home = () => {
@@ -29,7 +29,7 @@ const Home = () => {
   }, [isLoggedIn]); // Dependency array to run effect when isLoggedIn changes
 
   if (userRole == "Vendor") {
-    return <VendorDashboard />;
+    return <SellerHome />;
   }
   if (userRole == "Admin") {
     return <AdminDashboard />;
