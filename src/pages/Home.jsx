@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import api from "../api";
 import { toast } from "react-toastify";
+import VendorDashboard from "./VendorDashboard";
+import AdminDashboard from "./AdminDashboard";  
 
 const Home = () => {
   const [userRole, setUserRole] = useState(null); // State to hold the user role
@@ -27,10 +29,10 @@ const Home = () => {
   }, [isLoggedIn]); // Dependency array to run effect when isLoggedIn changes
 
   if (userRole == "Vendor") {
-    return (window.location.href = "/seller-dashboard");
+    return <VendorDashboard />;
   }
   if (userRole == "Admin") {
-    return (window.location.href = "/admin-dashboard");
+    return <AdminDashboard />;
   }
 
   return (
